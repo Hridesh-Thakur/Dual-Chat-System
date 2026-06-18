@@ -8,8 +8,8 @@ const router = Router();
 
 // POST /auth/register
 router.post("/auth/register", async (req, res): Promise<void> => {
-  const { username, displayName, password, inviteCode } = req.body;
-  if (!username || !displayName || !password || !inviteCode) {
+  const { username, displayName, password } = req.body;
+  if (!username || !displayName || !password) {
     res.status(400).json({ error: "Missing required fields" });
     return;
   }

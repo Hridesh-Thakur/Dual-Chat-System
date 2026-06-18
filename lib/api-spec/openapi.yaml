@@ -426,7 +426,7 @@ components:
 
     RegisterInput:
       type: object
-      required: [username, displayName, password, inviteCode]
+      required: [username, displayName, password]
       properties:
         username:
           type: string
@@ -437,9 +437,6 @@ components:
         password:
           type: string
           minLength: 6
-        inviteCode:
-          type: string
-          minLength: 4
 
     LoginInput:
       type: object

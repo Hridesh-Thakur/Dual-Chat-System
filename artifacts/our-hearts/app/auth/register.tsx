@@ -25,13 +25,12 @@ export default function RegisterScreen() {
   const [username, setUsername] = useState("");
   const [displayName, setDisplayName] = useState("");
   const [password, setPassword] = useState("");
-  const [inviteCode, setInviteCode] = useState("NEWCOUPLE");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   const handleRegister = async () => {
-    if (!username.trim() || !displayName.trim() || !password.trim() || !inviteCode.trim()) {
+    if (!username.trim() || !displayName.trim() || !password.trim()) {
       setError("Please fill in all fields");
       return;
     }
@@ -50,7 +49,6 @@ export default function RegisterScreen() {
         username: username.trim(),
         displayName: displayName.trim(),
         password,
-        inviteCode: inviteCode.trim(),
       });
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     } catch (e: any) {
@@ -151,19 +149,6 @@ export default function RegisterScreen() {
             <Feather name={showPassword ? "eye-off" : "eye"} size={20} color={colors.mutedForeground} />
           </TouchableOpacity>
         </View>
-
-        <Text style={styles.label}>Your invite code (share with partner)</Text>
-        <View style={styles.inputWrap}>
-          <TextInput
-            style={styles.input}
-            value={inviteCode}
-            onChangeText={setInviteCode}
-            placeholder="Will be auto-generated"
-            placeholderTextColor={colors.mutedForeground}
-            autoCapitalize="characters"
-          />
-        </View>
-        <Text style={styles.hint}>This can be anything — your partner will use it to pair with you</Text>
 
         {!!error && <Text style={styles.error}>{error}</Text>}
 

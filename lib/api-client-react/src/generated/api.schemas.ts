@@ -20,8 +20,6 @@ export interface RegisterInput {
   displayName: string;
   /** @minLength 6 */
   password: string;
-  /** @minLength 4 */
-  inviteCode: string;
 }
 
 export interface LoginInput {

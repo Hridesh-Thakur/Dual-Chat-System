@@ -79,7 +79,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const loginUser = useCallback(async (input: LoginInput) => {
-    const res = await login({ data: input });
+    const res = await login(input);
     tokenRef.current = res.token;
     setToken(res.token);
     setUser(res.user);
@@ -93,7 +93,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const registerUser = useCallback(async (input: RegisterInput) => {
-    const res = await register({ data: input });
+    const res = await register(input);
     tokenRef.current = res.token;
     setToken(res.token);
     setUser(res.user);
