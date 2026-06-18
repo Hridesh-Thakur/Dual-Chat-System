@@ -25,11 +25,11 @@ import {
 } from "@workspace/api-client-react";
 
 const MOODS = [
-  { key: "happy", label: "Happy", icon: "smile" as const },
-  { key: "missing", label: "Missing You", icon: "heart" as const },
-  { key: "loving", label: "Loving", icon: "star" as const },
-  { key: "sad", label: "Sad", icon: "frown" as const },
-  { key: "excited", label: "Excited", icon: "zap" as const },
+  { key: "happy", label: "Happy", emoji: "😊" },
+  { key: "missing", label: "Missing You", emoji: "💭" },
+  { key: "loving", label: "Loving", emoji: "💕" },
+  { key: "sad", label: "Sad", emoji: "😢" },
+  { key: "excited", label: "Excited", emoji: "⚡" },
 ];
 
 function daysCount(startDate: string): { days: number; months: number; years: number } {
@@ -160,7 +160,7 @@ export default function HomeScreen() {
     >
       <View style={styles.header}>
         <View>
-          <Text style={styles.greeting}>Hello, {user?.displayName} 💝</Text>
+          <Text style={styles.greeting}>Hello, {user?.displayName} <Text style={{ fontFamily: undefined }}>💝</Text></Text>
           <Text style={styles.greetingSub}>
             {couple ? `Together with ${couple.partner.displayName}` : "Waiting for partner..."}
           </Text>
@@ -201,7 +201,7 @@ export default function HomeScreen() {
                 onPress={() => moodMut.mutate(m.key)}
                 activeOpacity={0.75}
               >
-                <Feather name={m.icon} size={14} color={isActive ? "#fff" : colors.foreground} />
+                <Text style={{ fontSize: 14 }}>{m.emoji}</Text>
                 <Text style={[styles.moodBtnText, isActive && styles.moodBtnTextActive]}>{m.label}</Text>
               </TouchableOpacity>
             );
@@ -217,6 +217,7 @@ export default function HomeScreen() {
               <Text style={styles.partnerMoodBold}>{couple?.partner.displayName}</Text>
               {" is "}
               <Text style={styles.partnerMoodBold}>{MOODS.find((m) => m.key === partnerMood.mood)?.label ?? partnerMood.mood}</Text>
+              {"  "}<Text style={{ fontFamily: undefined }}>{MOODS.find((m) => m.key === partnerMood.mood)?.emoji}</Text>
             </Text>
           </View>
         )}

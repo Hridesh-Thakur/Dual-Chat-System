@@ -134,7 +134,7 @@ export default function PairScreen() {
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.scroll}>
-      <Text style={styles.heartBig}>💝</Text>
+      <Text style={[styles.heartBig, { fontFamily: undefined }]}>💝</Text>
       <Text style={styles.title}>Connect with Partner</Text>
       <Text style={styles.subtitle}>Share your code and enter theirs to begin</Text>
 
