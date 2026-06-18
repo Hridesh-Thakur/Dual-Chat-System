@@ -165,7 +165,14 @@ export default function HomeScreen() {
             {couple ? `Together with ${couple.partner.displayName}` : "Waiting for partner..."}
           </Text>
         </View>
-        <TouchableOpacity style={styles.logoutBtn} onPress={() => Alert.alert("Sign out?", "", [{ text: "Cancel" }, { text: "Sign out", onPress: logout }])}>
+        <TouchableOpacity
+          style={styles.logoutBtn}
+          onPress={async () => {
+            await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+            await logout();
+          }}
+          activeOpacity={0.6}
+        >
           <Feather name="log-out" size={20} color={colors.mutedForeground} />
         </TouchableOpacity>
       </View>
