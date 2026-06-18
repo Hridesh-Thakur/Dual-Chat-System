@@ -161,7 +161,7 @@ export default function ChatScreen() {
       alignItems: "flex-end",
       paddingHorizontal: 12,
       paddingVertical: 10,
-      paddingBottom: insets.bottom + 46 + (Platform.OS === "web" ? 34 : 0),
+      paddingBottom: insets.bottom + 64 + (Platform.OS === "web" ? 34 : 0),
       backgroundColor: colors.background,
       borderTopWidth: 1,
       borderTopColor: colors.border,
