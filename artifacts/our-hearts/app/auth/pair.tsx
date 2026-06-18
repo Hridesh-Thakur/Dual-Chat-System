@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   View,
   Text,
@@ -22,6 +22,18 @@ export default function PairScreen() {
   const colors = useColors();
   const insets = useSafeAreaInsets();
   const { user, logout, refreshCouple, refreshUser } = useAuth();
+
+  // Poll every 5 s so device 2 auto-navigates when device 1 pairs them
+  const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  useEffect(() => {
+    pollRef.current = setInterval(async () => {
+      await refreshUser();
+      await refreshCouple();
+    }, 5000);
+    return () => {
+      if (pollRef.current) clearInterval(pollRef.current);
+    };
+  }, [refreshUser, refreshCouple]);
   const [partnerCode, setPartnerCode] = useState("");
   const [startDate, setStartDate] = useState(() => {
     const d = new Date();
