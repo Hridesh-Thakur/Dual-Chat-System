@@ -61,7 +61,7 @@ export default function HomeScreen() {
   });
 
   const moodMut = useMutation({
-    mutationFn: (mood: string) => apiSetMood({ data: { mood } }),
+    mutationFn: (mood: string) => apiSetMood({ mood }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: getGetMoodsQueryKey() });
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);

@@ -48,7 +48,7 @@ export default function PairScreen() {
     setLoading(true);
     setError("");
     try {
-      await joinCouple({ data: { partnerInviteCode: partnerCode.trim().toUpperCase(), startDate } });
+      await joinCouple({ partnerInviteCode: partnerCode.trim().toUpperCase(), startDate });
       await refreshUser();
       await refreshCouple();
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);

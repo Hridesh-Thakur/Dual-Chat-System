@@ -54,7 +54,7 @@ export default function JournalScreen() {
   });
 
   const createMut = useMutation({
-    mutationFn: (c: string) => createJournalEntry({ data: { content: c } }),
+    mutationFn: (c: string) => createJournalEntry({ content: c }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: getGetJournalEntriesQueryKey() });
       setShowModal(false);
@@ -64,7 +64,7 @@ export default function JournalScreen() {
   });
 
   const dailyNoteMut = useMutation({
-    mutationFn: (c: string) => createDailyNote({ data: { content: c } }),
+    mutationFn: (c: string) => createDailyNote({ content: c }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: getGetDailyNotesQueryKey() });
       setShowModal(false);

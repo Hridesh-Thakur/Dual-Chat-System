@@ -51,7 +51,7 @@ export default function MemoriesScreen() {
   });
 
   const createMut = useMutation({
-    mutationFn: () => createMemory({ data: { title: title.trim(), description: description.trim(), memoryDate } }),
+    mutationFn: () => createMemory({ title: title.trim(), description: description.trim(), memoryDate }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: getGetMemoriesQueryKey() });
       setShowModal(false);

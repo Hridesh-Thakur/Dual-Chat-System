@@ -108,7 +108,7 @@ export default function ChatScreen() {
   });
 
   const sendMut = useMutation({
-    mutationFn: (content: string) => sendMessage({ data: { content } }),
+    mutationFn: (content: string) => sendMessage({ content }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: getGetMessagesQueryKey() });
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
