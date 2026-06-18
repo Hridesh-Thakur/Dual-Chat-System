@@ -24,12 +24,15 @@ export const registerBodyUsernameMin = 3;
 
 export const registerBodyPasswordMin = 6;
 
+export const registerBodyInviteCodeMin = 4;
+
 
 
 export const RegisterBody = zod.object({
   "username": zod.string().min(registerBodyUsernameMin),
   "displayName": zod.string().min(1),
-  "password": zod.string().min(registerBodyPasswordMin)
+  "password": zod.string().min(registerBodyPasswordMin),
+  "inviteCode": zod.string().min(registerBodyInviteCodeMin).optional().describe('Optional custom invite code; auto-generated if omitted')
 })
 
 

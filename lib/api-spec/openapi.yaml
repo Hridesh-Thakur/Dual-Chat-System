@@ -437,6 +437,10 @@ components:
         password:
           type: string
           minLength: 6
+        inviteCode:
+          type: string
+          minLength: 4
+          description: Optional custom invite code; auto-generated if omitted
 
     LoginInput:
       type: object

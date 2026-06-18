@@ -13,4 +13,9 @@ export interface RegisterInput {
   displayName: string;
   /** @minLength 6 */
   password: string;
+  /**
+     * Optional custom invite code; auto-generated if omitted
+     * @minLength 4
+     */
+  inviteCode?: string;
 }

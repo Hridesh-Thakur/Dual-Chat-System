@@ -8,7 +8,7 @@ const router = Router();
 
 // POST /auth/register
 router.post("/auth/register", async (req, res): Promise<void> => {
-  const { username, displayName, password } = req.body;
+  const { username, displayName, password, inviteCode: customCode } = req.body;
   if (!username || !displayName || !password) {
     res.status(400).json({ error: "Missing required fields" });
     return;
@@ -28,10 +28,19 @@ router.post("/auth/register", async (req, res): Promise<void> => {
     return;
   }
 
+  const myInviteCode = customCode ? customCode.trim().toUpperCase() : generateInviteCode();
+
+  if (customCode) {
+    const codeConflict = await db.select().from(usersTable).where(eq(usersTable.inviteCode, myInviteCode));
+    if (codeConflict.length > 0) {
+      res.status(409).json({ error: "Invite code already taken, choose another" });
+      return;
+    }
+  }
+
   const avatarColors = ["#E91E8C", "#9C27B0", "#F06292", "#AB47BC", "#EC407A", "#7E57C2", "#EF5350", "#FF7043"];
   const avatarColor = avatarColors[Math.floor(Math.random() * avatarColors.length)] ?? "#E91E8C";
   const passwordHash = await hashPassword(password);
-  const myInviteCode = generateInviteCode();
 
   const [user] = await db.insert(usersTable).values({
     username: username.toLowerCase(),

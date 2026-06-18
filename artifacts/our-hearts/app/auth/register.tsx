@@ -25,6 +25,7 @@ export default function RegisterScreen() {
   const [username, setUsername] = useState("");
   const [displayName, setDisplayName] = useState("");
   const [password, setPassword] = useState("");
+  const [inviteCode, setInviteCode] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -49,6 +50,7 @@ export default function RegisterScreen() {
         username: username.trim(),
         displayName: displayName.trim(),
         password,
+        ...(inviteCode.trim() ? { inviteCode: inviteCode.trim().toUpperCase() } : {}),
       });
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     } catch (e: any) {
@@ -84,6 +86,7 @@ export default function RegisterScreen() {
     },
     input: { flex: 1, height: 50, fontSize: 15, fontFamily: "Nunito_400Regular", color: colors.foreground },
     hint: { fontSize: 12, fontFamily: "Nunito_400Regular", color: colors.mutedForeground, marginTop: -10, marginBottom: 12, paddingLeft: 4 },
+    optional: { fontSize: 12, fontFamily: "Nunito_400Regular", color: colors.mutedForeground },
     error: { fontSize: 14, fontFamily: "Nunito_400Regular", color: colors.destructive, textAlign: "center", marginBottom: 12 },
     btn: {
       backgroundColor: colors.primary,
@@ -149,6 +152,21 @@ export default function RegisterScreen() {
             <Feather name={showPassword ? "eye-off" : "eye"} size={20} color={colors.mutedForeground} />
           </TouchableOpacity>
         </View>
+
+        <Text style={styles.label}>Your invite code <Text style={styles.optional}>(optional)</Text></Text>
+        <View style={styles.inputWrap}>
+          <TextInput
+            style={styles.input}
+            value={inviteCode}
+            onChangeText={(t) => setInviteCode(t.toUpperCase())}
+            placeholder="e.g. VENUS07"
+            placeholderTextColor={colors.mutedForeground}
+            autoCapitalize="characters"
+            autoCorrect={false}
+            maxLength={10}
+          />
+        </View>
+        <Text style={styles.hint}>Share this code with your partner so they can connect with you</Text>
 
         {!!error && <Text style={styles.error}>{error}</Text>}
 
