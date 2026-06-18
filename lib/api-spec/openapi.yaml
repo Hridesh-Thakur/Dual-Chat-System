@@ -3,20 +3,34 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: Our Hearts couples app API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: auth
+    description: Authentication
+  - name: couple
+    description: Couple management
+  - name: messages
+    description: Chat messages
+  - name: moods
+    description: Mood sharing
+  - name: journal
+    description: Feelings journal
+  - name: daily-notes
+    description: Daily love notes
+  - name: memories
+    description: Memory timeline
+
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,7 +38,375 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /auth/register:
+    post:
+      operationId: register
+      tags: [auth]
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterInput"
+      responses:
+        "201":
+          description: Registered
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /auth/login:
+    post:
+      operationId: login
+      tags: [auth]
+      summary: Login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginInput"
+      responses:
+        "200":
+          description: Logged in
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /auth/me:
+    get:
+      operationId: getMe
+      tags: [auth]
+      summary: Get current user
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Current user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /couple:
+    get:
+      operationId: getCouple
+      tags: [couple]
+      summary: Get couple info
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Couple info
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Couple"
+        "404":
+          description: Not yet connected to a partner
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /couple/join:
+    post:
+      operationId: joinCouple
+      tags: [couple]
+      summary: Join a couple using invite code
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/JoinCoupleInput"
+      responses:
+        "200":
+          description: Joined couple
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Couple"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Invite code not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /messages:
+    get:
+      operationId: getMessages
+      tags: [messages]
+      summary: Get chat messages
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: before
+          in: query
+          schema:
+            type: ["integer", "null"]
+          description: Load messages before this message ID (for pagination)
+        - name: limit
+          in: query
+          schema:
+            type: ["integer", "null"]
+      responses:
+        "200":
+          description: Messages list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Message"
+    post:
+      operationId: sendMessage
+      tags: [messages]
+      summary: Send a message
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MessageInput"
+      responses:
+        "201":
+          description: Message sent
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Message"
+
+  /moods:
+    get:
+      operationId: getMoods
+      tags: [moods]
+      summary: Get current moods for both partners
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Mood list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Mood"
+    post:
+      operationId: setMood
+      tags: [moods]
+      summary: Set my mood
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MoodInput"
+      responses:
+        "200":
+          description: Mood updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Mood"
+
+  /journal:
+    get:
+      operationId: getJournalEntries
+      tags: [journal]
+      summary: Get journal entries
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Journal entries
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/JournalEntry"
+    post:
+      operationId: createJournalEntry
+      tags: [journal]
+      summary: Create a journal entry
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/JournalEntryInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/JournalEntry"
+
+  /journal/{id}:
+    delete:
+      operationId: deleteJournalEntry
+      tags: [journal]
+      summary: Delete a journal entry
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /daily-notes:
+    get:
+      operationId: getDailyNotes
+      tags: [daily-notes]
+      summary: Get today's daily notes from both partners
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Daily notes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DailyNote"
+    post:
+      operationId: createDailyNote
+      tags: [daily-notes]
+      summary: Send today's daily love note
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DailyNoteInput"
+      responses:
+        "201":
+          description: Daily note created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DailyNote"
+        "409":
+          description: Already sent today
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /memories:
+    get:
+      operationId: getMemories
+      tags: [memories]
+      summary: Get all memories
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Memories list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Memory"
+    post:
+      operationId: createMemory
+      tags: [memories]
+      summary: Create a memory
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MemoryInput"
+      responses:
+        "201":
+          description: Memory created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Memory"
+
+  /memories/{id}:
+    delete:
+      operationId: deleteMemory
+      tags: [memories]
+      summary: Delete a memory
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
   schemas:
     HealthStatus:
       type: object
@@ -34,3 +416,242 @@ components:
       required:
         - status
 
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error
+
+    RegisterInput:
+      type: object
+      required: [username, displayName, password, inviteCode]
+      properties:
+        username:
+          type: string
+          minLength: 3
+        displayName:
+          type: string
+          minLength: 1
+        password:
+          type: string
+          minLength: 6
+        inviteCode:
+          type: string
+          minLength: 4
+
+    LoginInput:
+      type: object
+      required: [username, password]
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+
+    AuthResponse:
+      type: object
+      required: [token, user]
+      properties:
+        token:
+          type: string
+        user:
+          $ref: "#/components/schemas/User"
+
+    User:
+      type: object
+      required: [id, username, displayName, avatarColor, inviteCode, coupleId]
+      properties:
+        id:
+          type: integer
+        username:
+          type: string
+        displayName:
+          type: string
+        avatarColor:
+          type: string
+        inviteCode:
+          type: string
+        coupleId:
+          type: ["integer", "null"]
+
+    Couple:
+      type: object
+      required: [id, startDate, me, partner]
+      properties:
+        id:
+          type: integer
+        startDate:
+          type: string
+          description: ISO date string YYYY-MM-DD
+        me:
+          $ref: "#/components/schemas/PartnerInfo"
+        partner:
+          $ref: "#/components/schemas/PartnerInfo"
+
+    PartnerInfo:
+      type: object
+      required: [id, displayName, avatarColor]
+      properties:
+        id:
+          type: integer
+        displayName:
+          type: string
+        avatarColor:
+          type: string
+
+    JoinCoupleInput:
+      type: object
+      required: [partnerInviteCode, startDate]
+      properties:
+        partnerInviteCode:
+          type: string
+        startDate:
+          type: string
+          description: ISO date string YYYY-MM-DD
+
+    Message:
+      type: object
+      required: [id, coupleId, senderId, senderDisplayName, senderAvatarColor, content, createdAt]
+      properties:
+        id:
+          type: integer
+        coupleId:
+          type: integer
+        senderId:
+          type: integer
+        senderDisplayName:
+          type: string
+        senderAvatarColor:
+          type: string
+        content:
+          type: string
+        createdAt:
+          type: string
+
+    MessageInput:
+      type: object
+      required: [content]
+      properties:
+        content:
+          type: string
+          minLength: 1
+
+    Mood:
+      type: object
+      required: [id, userId, coupleId, displayName, avatarColor, mood, updatedAt]
+      properties:
+        id:
+          type: integer
+        userId:
+          type: integer
+        coupleId:
+          type: integer
+        displayName:
+          type: string
+        avatarColor:
+          type: string
+        mood:
+          type: string
+        updatedAt:
+          type: string
+
+    MoodInput:
+      type: object
+      required: [mood]
+      properties:
+        mood:
+          type: string
+
+    JournalEntry:
+      type: object
+      required: [id, userId, coupleId, displayName, avatarColor, content, createdAt]
+      properties:
+        id:
+          type: integer
+        userId:
+          type: integer
+        coupleId:
+          type: integer
+        displayName:
+          type: string
+        avatarColor:
+          type: string
+        content:
+          type: string
+        createdAt:
+          type: string
+
+    JournalEntryInput:
+      type: object
+      required: [content]
+      properties:
+        content:
+          type: string
+          minLength: 1
+
+    DailyNote:
+      type: object
+      required: [id, userId, coupleId, displayName, avatarColor, content, date, createdAt]
+      properties:
+        id:
+          type: integer
+        userId:
+          type: integer
+        coupleId:
+          type: integer
+        displayName:
+          type: string
+        avatarColor:
+          type: string
+        content:
+          type: string
+        date:
+          type: string
+        createdAt:
+          type: string
+
+    DailyNoteInput:
+      type: object
+      required: [content]
+      properties:
+        content:
+          type: string
+          minLength: 1
+
+    Memory:
+      type: object
+      required: [id, coupleId, createdByUserId, displayName, avatarColor, title, description, memoryDate, createdAt]
+      properties:
+        id:
+          type: integer
+        coupleId:
+          type: integer
+        createdByUserId:
+          type: integer
+        displayName:
+          type: string
+        avatarColor:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        memoryDate:
+          type: string
+        createdAt:
+          type: string
+
+    MemoryInput:
+      type: object
+      required: [title, description, memoryDate]
+      properties:
+        title:
+          type: string
+          minLength: 1
+        description:
+          type: string
+        memoryDate:
+          type: string
+          description: ISO date string YYYY-MM-DD

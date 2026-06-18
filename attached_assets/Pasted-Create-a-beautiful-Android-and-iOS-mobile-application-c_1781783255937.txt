@@ -1,0 +1,98 @@
+Create a beautiful Android and iOS mobile application called "Our Hearts" designed exclusively for two people in a long-distance relationship.
+
+Core Concept
+
+This app is a private emotional space where only two users can connect, chat, and share their feelings through text messages, emojis, and heartfelt notes. The app should feel warm, romantic, peaceful, and emotionally comforting.
+
+Design & Theme
+Primary color: Soft Light Pink (#FFD6E7)
+Secondary colors: White, Cream, and Pastel Rose
+Minimalist and elegant UI
+Smooth animations
+Calm and peaceful aesthetic
+Rounded corners on cards and buttons
+Soft shadows
+Romantic but mature design (not childish)
+Beautiful typography
+Cozy and emotional atmosphere
+Features
+1. Private Couple Space
+Only two registered users can join.
+Secure login and authentication.
+Invite code system so only the partner can enter.
+2. Couple Chat Room
+One shared chat room.
+Send and receive:
+Text messages
+Emojis
+Heart reactions ❤️
+Cute stickers
+Real-time messaging.
+Typing indicator.
+Read receipts ("Seen").
+3. Feelings Journal
+Users can write long emotional notes.
+Save memories and feelings.
+Notes can include emojis.
+Beautiful card-based layout.
+4. Daily Love Notes
+Send one special daily message.
+Highlighted in a separate section.
+Animated heart effect when opened.
+5. Mood Sharing
+Choose mood:
+Happy 😊
+Missing You 🥺
+Loving ❤️
+Sad 😔
+Excited 😍
+Partner can instantly see current mood.
+6. Memory Timeline
+Store important memories.
+Add title, date, and description.
+Timeline view with soft animations.
+7. Relationship Counter
+Show:
+Days together
+Months together
+Years together
+Beautiful romantic dashboard.
+8. Notifications
+Notify partner when:
+New message arrives
+New feeling note is shared
+Mood changes
+Daily love note is sent
+Home Screen
+
+Display:
+
+Couple profile picture
+Relationship counter
+Today's mood
+Daily love note
+Quick access to chat
+Chat UI
+WhatsApp-like smooth messaging
+Pink and white message bubbles
+Cute heart-shaped send button
+Emoji picker
+Message timestamps
+Clean modern layout
+Technical Requirements
+Flutter framework
+Firebase Authentication
+Cloud Firestore Database
+Firebase Cloud Messaging
+Real-time sync
+Dark mode and Light mode
+Secure and scalable architecture
+Extra Romantic Touches
+Floating hearts animation on special occasions
+Good morning and good night message templates
+"Miss You" button that sends a cute animated notification
+Soft background music option (toggle on/off)
+Cute relationship achievements and milestones
+Goal
+
+The application should feel like a private digital love diary and messaging space where two people can comfortably express feelings they may find difficult to share on social media or phone calls. The overall experience should be emotionally warm, peaceful, romantic, secure, and distraction-free.
