@@ -59,8 +59,8 @@ export default function MainTabLayout() {
       <Tabs.Screen
         name="journal"
         options={{
-          title: "Journal",
-          tabBarIcon: ({ color }) => <Feather name="book-open" size={22} color={color} />,
+          title: "Diary",
+          tabBarIcon: ({ color }) => <Feather name="feather" size={22} color={color} />,
         }}
       />
       <Tabs.Screen

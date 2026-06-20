@@ -20,59 +20,52 @@ import { useColors } from "@/hooks/useColors";
 import { useAuth } from "@/context/AuthContext";
 import {
   getGetJournalEntriesQueryKey,
-  getGetDailyNotesQueryKey,
   getJournalEntries,
   createJournalEntry,
+  updateJournalEntry,
   deleteJournalEntry,
-  getDailyNotes,
-  createDailyNote,
 } from "@workspace/api-client-react";
 import type { JournalEntry } from "@workspace/api-client-react";
 
 function formatDate(iso: string): string {
-  return new Date(iso).toLocaleDateString([], { month: "short", day: "numeric", year: "numeric" });
+  const d = new Date(iso);
+  return d.toLocaleDateString([], { month: "short", day: "numeric", year: "numeric" }) +
+    "  " + d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 }
 
-export default function JournalScreen() {
+export default function DiaryScreen() {
   const colors = useColors();
   const insets = useSafeAreaInsets();
   const { user, couple } = useAuth();
   const qc = useQueryClient();
 
+  const [activeSide, setActiveSide] = useState<"me" | "partner">("me");
   const [showModal, setShowModal] = useState(false);
-  const [isDailyNote, setIsDailyNote] = useState(false);
+  const [editingEntry, setEditingEntry] = useState<JournalEntry | null>(null);
   const [content, setContent] = useState("");
 
   const journalQ = useQuery({
     queryKey: getGetJournalEntriesQueryKey(),
     queryFn: getJournalEntries,
-  });
-
-  const dailyQ = useQuery({
-    queryKey: getGetDailyNotesQueryKey(),
-    queryFn: getDailyNotes,
+    refetchInterval: 5000,
   });
 
   const createMut = useMutation({
     mutationFn: (c: string) => createJournalEntry({ content: c }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: getGetJournalEntriesQueryKey() });
-      setShowModal(false);
-      setContent("");
+      closeModal();
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     },
   });
 
-  const dailyNoteMut = useMutation({
-    mutationFn: (c: string) => createDailyNote({ content: c }),
+  const updateMut = useMutation({
+    mutationFn: ({ id, content: c }: { id: number; content: string }) =>
+      updateJournalEntry(id, { content: c }),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: getGetDailyNotesQueryKey() });
-      setShowModal(false);
-      setContent("");
+      qc.invalidateQueries({ queryKey: getGetJournalEntriesQueryKey() });
+      closeModal();
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    },
-    onError: (e: any) => {
-      Alert.alert("Already sent", e?.data?.error ?? "You've already sent today's love note");
     },
   });
 
@@ -81,53 +74,106 @@ export default function JournalScreen() {
     onSuccess: () => qc.invalidateQueries({ queryKey: getGetJournalEntriesQueryKey() }),
   });
 
-  const openNew = (daily: boolean) => {
-    setIsDailyNote(daily);
+  const openNew = () => {
+    setEditingEntry(null);
     setContent("");
     setShowModal(true);
   };
 
+  const openEdit = (entry: JournalEntry) => {
+    setEditingEntry(entry);
+    setContent(entry.content);
+    setShowModal(true);
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
+    setEditingEntry(null);
+    setContent("");
+  };
+
   const handleSubmit = () => {
     if (!content.trim()) return;
-    if (isDailyNote) dailyNoteMut.mutate(content.trim());
-    else createMut.mutate(content.trim());
+    if (editingEntry) {
+      updateMut.mutate({ id: editingEntry.id, content: content.trim() });
+    } else {
+      createMut.mutate(content.trim());
+    }
   };
 
   const handleDelete = (entry: JournalEntry) => {
-    if (entry.userId !== user?.id) {
-      Alert.alert("Cannot delete", "You can only delete your own entries");
-      return;
-    }
     Alert.alert("Delete entry?", "This cannot be undone", [
-      { text: "Cancel" },
-      { text: "Delete", style: "destructive", onPress: () => deleteMut.mutate(entry.id) },
+      { text: "Cancel", style: "cancel" },
+      {
+        text: "Delete",
+        style: "destructive",
+        onPress: () => {
+          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+          deleteMut.mutate(entry.id);
+        },
+      },
     ]);
   };
+
+  const allEntries = journalQ.data ?? [];
+  const myEntries = allEntries.filter((e) => e.userId === user?.id);
+  const partnerEntries = allEntries.filter((e) => e.userId !== user?.id);
+  const shownEntries = activeSide === "me" ? myEntries : partnerEntries;
+  const isViewingOwn = activeSide === "me";
+
+  const myName = user?.displayName ?? "You";
+  const partnerName = couple?.partner.displayName ?? "Partner";
+  const myColor = user?.avatarColor ?? colors.primary;
+  const partnerColor = couple?.partner.avatarColor ?? colors.accent;
 
   const styles = StyleSheet.create({
     container: { flex: 1, backgroundColor: colors.background },
     header: {
       paddingHorizontal: 20,
       paddingTop: insets.top + 20 + (Platform.OS === "web" ? 67 : 0),
-      paddingBottom: 16,
+      paddingBottom: 12,
     },
-    title: { fontSize: 28, fontFamily: "Nunito_800ExtraBold", color: colors.foreground },
-    subtitle: { fontSize: 14, fontFamily: "Nunito_400Regular", color: colors.mutedForeground, marginTop: 2 },
-    actionRow: { flexDirection: "row", gap: 10, marginTop: 16 },
-    actionBtn: {
+    title: { fontSize: 28, fontFamily: "Nunito_800ExtraBold", color: colors.foreground, marginBottom: 4 },
+    subtitle: { fontSize: 14, fontFamily: "Nunito_400Regular", color: colors.mutedForeground, marginBottom: 16 },
+
+    // Split selector
+    selectorWrap: {
+      flexDirection: "row",
+      borderWidth: 1.5,
+      borderColor: colors.primary,
+      borderRadius: 12,
+      overflow: "hidden",
+      marginBottom: 4,
+    },
+    selectorBtn: {
       flex: 1,
-      borderRadius: 14,
-      height: 46,
+      paddingVertical: 11,
       alignItems: "center",
       justifyContent: "center",
-      flexDirection: "row",
-      gap: 8,
     },
-    primaryBtn: { backgroundColor: colors.primary },
-    secondaryBtn: { backgroundColor: colors.secondary },
-    primaryBtnText: { fontSize: 14, fontFamily: "Nunito_700Bold", color: "#fff" },
-    secondaryBtnText: { fontSize: 14, fontFamily: "Nunito_700Bold", color: colors.primary },
-    list: { paddingHorizontal: 20, paddingBottom: 120 + insets.bottom + (Platform.OS === "web" ? 34 : 0) },
+    selectorBtnActive: { backgroundColor: colors.primary },
+    selectorBtnInactive: { backgroundColor: "transparent" },
+    selectorDivider: { width: 1.5, backgroundColor: colors.primary },
+    selectorText: {
+      fontSize: 14,
+      fontFamily: "Nunito_700Bold",
+    },
+    selectorTextActive: { color: "#fff" },
+    selectorTextInactive: { color: colors.primary },
+
+    readOnlyBadge: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 4,
+      paddingHorizontal: 20,
+      paddingBottom: 10,
+    },
+    readOnlyText: { fontSize: 12, fontFamily: "Nunito_400Regular", color: colors.mutedForeground },
+
+    list: {
+      paddingHorizontal: 20,
+      paddingBottom: 120 + insets.bottom + (Platform.OS === "web" ? 34 : 0),
+    },
     entryCard: {
       backgroundColor: colors.card,
       borderRadius: 18,
@@ -136,16 +182,60 @@ export default function JournalScreen() {
       borderWidth: 1,
       borderColor: colors.border,
     },
-    entryHeader: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 10 },
+    entryHeader: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      marginBottom: 10,
+    },
     authorRow: { flexDirection: "row", alignItems: "center", gap: 8 },
-    avatarDot: { width: 28, height: 28, borderRadius: 14, alignItems: "center", justifyContent: "center" },
-    avatarTxt: { fontSize: 11, fontFamily: "Nunito_700Bold", color: "#fff" },
+    avatarDot: {
+      width: 30,
+      height: 30,
+      borderRadius: 15,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    avatarTxt: { fontSize: 12, fontFamily: "Nunito_700Bold", color: "#fff" },
     authorName: { fontSize: 13, fontFamily: "Nunito_700Bold", color: colors.foreground },
-    date: { fontSize: 11, fontFamily: "Nunito_400Regular", color: colors.mutedForeground },
-    entryText: { fontSize: 15, fontFamily: "Nunito_400Regular", color: colors.foreground, lineHeight: 23 },
-    deleteBtn: { padding: 4 },
-    emptyContainer: { alignItems: "center", padding: 40 },
-    emptyText: { fontSize: 15, fontFamily: "Nunito_400Regular", color: colors.mutedForeground, textAlign: "center" },
+    date: { fontSize: 11, fontFamily: "Nunito_400Regular", color: colors.mutedForeground, marginTop: 1 },
+    entryText: {
+      fontSize: 15,
+      fontFamily: "Nunito_400Regular",
+      color: colors.foreground,
+      lineHeight: 23,
+    },
+    actionBtns: { flexDirection: "row", gap: 8 },
+    iconBtn: { padding: 4 },
+
+    emptyContainer: { alignItems: "center", paddingTop: 60, paddingHorizontal: 20 },
+    emptyText: {
+      fontSize: 15,
+      fontFamily: "Nunito_400Regular",
+      color: colors.mutedForeground,
+      textAlign: "center",
+      lineHeight: 22,
+      marginTop: 14,
+    },
+
+    // FAB
+    fab: {
+      position: "absolute",
+      right: 20,
+      bottom: 90 + insets.bottom + (Platform.OS === "web" ? 34 : 0),
+      width: 56,
+      height: 56,
+      borderRadius: 28,
+      backgroundColor: colors.primary,
+      alignItems: "center",
+      justifyContent: "center",
+      shadowColor: colors.primary,
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.35,
+      shadowRadius: 10,
+      elevation: 6,
+    },
+
     // Modal
     overlay: { flex: 1, backgroundColor: "rgba(0,0,0,0.45)", justifyContent: "flex-end" },
     modalCard: {
@@ -155,7 +245,12 @@ export default function JournalScreen() {
       padding: 24,
       paddingBottom: insets.bottom + 24 + (Platform.OS === "web" ? 34 : 0),
     },
-    modalTitle: { fontSize: 20, fontFamily: "Nunito_800ExtraBold", color: colors.foreground, marginBottom: 16 },
+    modalTitle: {
+      fontSize: 20,
+      fontFamily: "Nunito_800ExtraBold",
+      color: colors.foreground,
+      marginBottom: 16,
+    },
     textArea: {
       backgroundColor: colors.card,
       borderRadius: 14,
@@ -181,45 +276,70 @@ export default function JournalScreen() {
     cancelText: { fontSize: 15, fontFamily: "Nunito_400Regular", color: colors.mutedForeground },
   });
 
-  const entries = journalQ.data ?? [];
+  const avatarColor = activeSide === "me" ? myColor : partnerColor;
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Journal</Text>
-        <Text style={styles.subtitle}>Share your feelings with each other</Text>
-        <View style={styles.actionRow}>
-          <TouchableOpacity style={[styles.actionBtn, styles.primaryBtn]} onPress={() => openNew(false)} activeOpacity={0.85}>
-            <Feather name="edit-3" size={16} color="#fff" />
-            <Text style={styles.primaryBtnText}>Write Feeling</Text>
+        <Text style={styles.title}>Diary</Text>
+        <Text style={styles.subtitle}>Private thoughts, shared together</Text>
+
+        {/* Split selector */}
+        <View style={styles.selectorWrap}>
+          <TouchableOpacity
+            style={[styles.selectorBtn, activeSide === "me" ? styles.selectorBtnActive : styles.selectorBtnInactive]}
+            onPress={() => { setActiveSide("me"); Haptics.selectionAsync(); }}
+            activeOpacity={0.85}
+          >
+            <Text style={[styles.selectorText, activeSide === "me" ? styles.selectorTextActive : styles.selectorTextInactive]}>
+              {myName}
+            </Text>
           </TouchableOpacity>
-          <TouchableOpacity style={[styles.actionBtn, styles.secondaryBtn]} onPress={() => openNew(true)} activeOpacity={0.85}>
-            <Feather name="heart" size={16} color={colors.primary} />
-            <Text style={styles.secondaryBtnText}>Love Note</Text>
+          <View style={styles.selectorDivider} />
+          <TouchableOpacity
+            style={[styles.selectorBtn, activeSide === "partner" ? styles.selectorBtnActive : styles.selectorBtnInactive]}
+            onPress={() => { setActiveSide("partner"); Haptics.selectionAsync(); }}
+            activeOpacity={0.85}
+          >
+            <Text style={[styles.selectorText, activeSide === "partner" ? styles.selectorTextActive : styles.selectorTextInactive]}>
+              {partnerName}
+            </Text>
           </TouchableOpacity>
         </View>
       </View>
+
+      {!isViewingOwn && (
+        <View style={styles.readOnlyBadge}>
+          <Feather name="eye" size={12} color={colors.mutedForeground} />
+          <Text style={styles.readOnlyText}>Read-only — {partnerName}'s diary</Text>
+        </View>
+      )}
 
       {journalQ.isLoading ? (
         <ActivityIndicator color={colors.primary} style={{ marginTop: 40 }} />
       ) : (
         <FlatList
-          data={entries}
+          data={shownEntries}
           keyExtractor={(e) => String(e.id)}
-          contentContainerStyle={[styles.list, entries.length === 0 && { flex: 1 }]}
+          contentContainerStyle={[styles.list, shownEntries.length === 0 && { flex: 1 }]}
           ListEmptyComponent={
             <View style={styles.emptyContainer}>
-              <Feather name="book-open" size={48} color={colors.border} style={{ marginBottom: 16 }} />
-              <Text style={styles.emptyText}>Your journal is empty{"\n"}Write your first feeling</Text>
+              <Text style={{ fontSize: 44 }}>{"📖"}</Text>
+              <Text style={styles.emptyText}>
+                {isViewingOwn
+                  ? "Your diary is empty\nTap + to write your first entry"
+                  : `${partnerName} hasn't written anything yet`}
+              </Text>
             </View>
           }
           renderItem={({ item }) => {
-            const isMe = item.userId === user?.id;
+            const isOwn = item.userId === user?.id;
+            const dotColor = isOwn ? myColor : partnerColor;
             return (
               <View style={styles.entryCard}>
                 <View style={styles.entryHeader}>
                   <View style={styles.authorRow}>
-                    <View style={[styles.avatarDot, { backgroundColor: isMe ? (user?.avatarColor ?? colors.primary) : (couple?.partner.avatarColor ?? colors.accent) }]}>
+                    <View style={[styles.avatarDot, { backgroundColor: dotColor }]}>
                       <Text style={styles.avatarTxt}>{item.displayName.charAt(0).toUpperCase()}</Text>
                     </View>
                     <View>
@@ -227,10 +347,15 @@ export default function JournalScreen() {
                       <Text style={styles.date}>{formatDate(item.createdAt)}</Text>
                     </View>
                   </View>
-                  {isMe && (
-                    <TouchableOpacity style={styles.deleteBtn} onPress={() => handleDelete(item)}>
-                      <Feather name="trash-2" size={16} color={colors.mutedForeground} />
-                    </TouchableOpacity>
+                  {isOwn && (
+                    <View style={styles.actionBtns}>
+                      <TouchableOpacity style={styles.iconBtn} onPress={() => openEdit(item)} activeOpacity={0.7}>
+                        <Feather name="edit-2" size={16} color={colors.primary} />
+                      </TouchableOpacity>
+                      <TouchableOpacity style={styles.iconBtn} onPress={() => handleDelete(item)} activeOpacity={0.7}>
+                        <Feather name="trash-2" size={16} color={colors.mutedForeground} />
+                      </TouchableOpacity>
+                    </View>
                   )}
                 </View>
                 <Text style={styles.entryText}>{item.content}</Text>
@@ -240,15 +365,25 @@ export default function JournalScreen() {
         />
       )}
 
-      <Modal visible={showModal} animationType="slide" transparent onRequestClose={() => setShowModal(false)}>
+      {isViewingOwn && (
+        <TouchableOpacity
+          style={styles.fab}
+          onPress={openNew}
+          activeOpacity={0.85}
+        >
+          <Feather name="plus" size={24} color="#fff" />
+        </TouchableOpacity>
+      )}
+
+      <Modal visible={showModal} animationType="slide" transparent onRequestClose={closeModal}>
         <KeyboardAvoidingView style={styles.overlay} behavior={Platform.OS === "ios" ? "padding" : undefined}>
           <View style={styles.modalCard}>
-            <Text style={styles.modalTitle}>{isDailyNote ? "Today's Love Note" : "Write a Feeling"}</Text>
+            <Text style={styles.modalTitle}>{editingEntry ? "Edit Entry" : "New Entry"}</Text>
             <TextInput
               style={styles.textArea}
               value={content}
               onChangeText={setContent}
-              placeholder={isDailyNote ? "Write something heartfelt for today..." : "Share what's in your heart..."}
+              placeholder="Share what's in your heart..."
               placeholderTextColor={colors.mutedForeground}
               multiline
               autoFocus
@@ -256,16 +391,16 @@ export default function JournalScreen() {
             <TouchableOpacity
               style={styles.modalBtn}
               onPress={handleSubmit}
-              disabled={createMut.isPending || dailyNoteMut.isPending}
+              disabled={createMut.isPending || updateMut.isPending}
               activeOpacity={0.85}
             >
-              {(createMut.isPending || dailyNoteMut.isPending) ? (
+              {(createMut.isPending || updateMut.isPending) ? (
                 <ActivityIndicator color="#fff" />
               ) : (
-                <Text style={styles.modalBtnText}>{isDailyNote ? "Send Love Note" : "Save Entry"}</Text>
+                <Text style={styles.modalBtnText}>{editingEntry ? "Save Changes" : "Save Entry"}</Text>
               )}
             </TouchableOpacity>
-            <TouchableOpacity style={styles.cancelBtn} onPress={() => setShowModal(false)}>
+            <TouchableOpacity style={styles.cancelBtn} onPress={closeModal}>
               <Text style={styles.cancelText}>Cancel</Text>
             </TouchableOpacity>
           </View>

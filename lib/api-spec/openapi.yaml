@@ -289,6 +289,31 @@ paths:
                 $ref: "#/components/schemas/JournalEntry"
 
   /journal/{id}:
+    put:
+      operationId: updateJournalEntry
+      tags: [journal]
+      summary: Update a journal entry
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/JournalEntryInput"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/JournalEntry"
     delete:
       operationId: deleteJournalEntry
       tags: [journal]

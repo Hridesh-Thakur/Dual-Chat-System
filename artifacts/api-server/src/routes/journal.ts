@@ -67,6 +67,40 @@ router.post("/journal", requireAuth, async (req, res): Promise<void> => {
   });
 });
 
+// PUT /journal/:id
+router.put("/journal/:id", requireAuth, async (req, res): Promise<void> => {
+  const user = req.user!;
+  const raw = Array.isArray(req.params["id"]) ? req.params["id"][0] : req.params["id"];
+  const id = parseInt(raw ?? "", 10);
+  if (isNaN(id)) {
+    res.status(400).json({ error: "Invalid id" });
+    return;
+  }
+  const { content } = req.body;
+  if (content == null || typeof content !== "string" || content.trim().length === 0) {
+    res.status(400).json({ error: "Content is required" });
+    return;
+  }
+  const [updated] = await db
+    .update(journalEntriesTable)
+    .set({ content: content.trim() })
+    .where(and(eq(journalEntriesTable.id, id), eq(journalEntriesTable.userId, user.id)))
+    .returning();
+  if (!updated) {
+    res.status(404).json({ error: "Entry not found or not yours" });
+    return;
+  }
+  res.json({
+    id: updated.id,
+    userId: updated.userId,
+    coupleId: updated.coupleId,
+    displayName: user.displayName,
+    avatarColor: user.avatarColor,
+    content: updated.content,
+    createdAt: updated.createdAt.toISOString(),
+  });
+});
+
 // DELETE /journal/:id
 router.delete("/journal/:id", requireAuth, async (req, res): Promise<void> => {
   const user = req.user!;

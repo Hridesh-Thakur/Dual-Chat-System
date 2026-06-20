@@ -204,6 +204,31 @@ export const CreateJournalEntryBody = zod.object({
 
 
 /**
+ * @summary Update a journal entry
+ */
+export const UpdateJournalEntryParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+
+
+
+export const UpdateJournalEntryBody = zod.object({
+  "content": zod.string().min(1)
+})
+
+export const UpdateJournalEntryResponse = zod.object({
+  "id": zod.number(),
+  "userId": zod.number(),
+  "coupleId": zod.number(),
+  "displayName": zod.string(),
+  "avatarColor": zod.string(),
+  "content": zod.string(),
+  "createdAt": zod.string()
+})
+
+
+/**
  * @summary Delete a journal entry
  */
 export const DeleteJournalEntryParams = zod.object({
