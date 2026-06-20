@@ -160,7 +160,7 @@ export default function HomeScreen() {
     >
       <View style={styles.header}>
         <View>
-          <Text style={styles.greeting}>Hello, {user?.displayName} <Text style={{ fontFamily: undefined }}>💝</Text></Text>
+          <Text style={styles.greeting}>Hello, {user?.displayName} {"💝"}</Text>
           <Text style={styles.greetingSub}>
             {couple ? `Together with ${couple.partner.displayName}` : "Waiting for partner..."}
           </Text>
@@ -217,7 +217,7 @@ export default function HomeScreen() {
               <Text style={styles.partnerMoodBold}>{couple?.partner.displayName}</Text>
               {" is "}
               <Text style={styles.partnerMoodBold}>{MOODS.find((m) => m.key === partnerMood.mood)?.label ?? partnerMood.mood}</Text>
-              {"  "}<Text style={{ fontFamily: undefined }}>{MOODS.find((m) => m.key === partnerMood.mood)?.emoji}</Text>
+              {"  "}{MOODS.find((m) => m.key === partnerMood.mood)?.emoji}
             </Text>
           </View>
         )}
