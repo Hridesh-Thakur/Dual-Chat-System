@@ -1,5 +1,5 @@
 # ============================================================================
-# SECURITY: Minimum release age for npm packages (supply-chain attack defense)
+# SECURITY: Minimum release age for npm packages (supply-chain attack defense) 
 # ============================================================================
 #
 # This setting requires that any npm package version must have been published
