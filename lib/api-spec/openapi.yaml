@@ -1,4 +1,4 @@
-openapi: 3.1.0
+openapi: 3.1.0 
 info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
