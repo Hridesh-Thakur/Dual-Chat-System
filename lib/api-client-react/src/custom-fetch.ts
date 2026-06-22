@@ -1,4 +1,4 @@
-export type CustomFetchOptions = RequestInit & {
+export type CustomFetchOptions = RequestInit & { 
   responseType?: "json" | "text" | "blob" | "auto";
 };
 
