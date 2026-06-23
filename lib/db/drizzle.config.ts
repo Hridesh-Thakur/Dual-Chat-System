@@ -1,4 +1,4 @@
-import { defineConfig } from "drizzle-kit";
+import { defineConfig } from "drizzle-kit"; 
 import path from "path";
 
 if (!process.env.DATABASE_URL) {
