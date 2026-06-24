@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { Router } from "express"; 
 import { db } from "@workspace/db";
 import { usersTable, couplesTable } from "@workspace/db";
 import { eq, or } from "drizzle-orm";
