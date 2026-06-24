@@ -1,4 +1,4 @@
-kind = "api"
+kind = "api" 
 previewPath = "/api" # TODO - should be excluded from preview in the first place
 title = "API Server"
 version = "1.0.0"
