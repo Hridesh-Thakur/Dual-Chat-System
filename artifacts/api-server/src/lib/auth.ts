@@ -1,4 +1,4 @@
-import jwt from "jsonwebtoken";
+import jwt from "jsonwebtoken"; 
 import bcrypt from "bcryptjs";
 import type { Request, Response, NextFunction } from "express";
 import { db } from "@workspace/db";
