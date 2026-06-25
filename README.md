@@ -9,7 +9,6 @@ A modern **couples chat application** built for intimate and real-time conversat
 - **Dual Chat Interface** — Specially designed for couples
 - **Real-time Messaging** — Instant chat experience
 - **User-specific Diary** — Private journaling feature with editing
-- **Image Sharing** — Attach and share memories
 - **Secure & Private** — Built with modern security practices
 
 ---
