@@ -1,79 +1,79 @@
 const colors = {
   light: {
-    text: "#2D1B2E",
-    tint: "#D4477A",
+    text: "#5A4A4A",
+    tint: "#E8A2A2",
 
-    background: "#FFF5F8",
-    foreground: "#2D1B2E",
+    background: "#F7F5EB",
+    foreground: "#5A4A4A",
 
     card: "#FFFFFF",
-    cardForeground: "#2D1B2E",
+    cardForeground: "#5A4A4A",
 
-    primary: "#D4477A",
+    primary: "#A0C3D2",
     primaryForeground: "#FFFFFF",
 
-    secondary: "#FFE4EF",
-    secondaryForeground: "#8B2252",
+    secondary: "#D5E3E8",
+    secondaryForeground: "#4F6670",
 
-    muted: "#F8E4EC",
-    mutedForeground: "#9B6B80",
+    muted: "#EAE0DA",
+    mutedForeground: "#7A6E6E",
 
-    accent: "#FF8FAB",
+    accent: "#E8A2A2",
     accentForeground: "#FFFFFF",
 
-    destructive: "#EF4444",
+    destructive: "#D97A7A",
     destructiveForeground: "#FFFFFF",
 
-    border: "#F0C4D8",
-    input: "#F5D0E0",
+    border: "#EAC7CC",
+    input: "#EAE0DA",
 
     // Brand extras
-    bubbleMe: "#D4477A",
+    bubbleMe: "#A0C3D2",
     bubbleMeFg: "#FFFFFF",
     bubblePartner: "#FFFFFF",
-    bubblePartnerFg: "#2D1B2E",
-    heartPink: "#FF6B9D",
-    roseDeep: "#8B2252",
-    cream: "#FFF5F8",
-    softPink: "#FFD6E7",
+    bubblePartnerFg: "#5A4A4A",
+    heartPink: "#E8A2A2",
+    roseDeep: "#C98F8F",
+    cream: "#F7F5EB",
+    softPink: "#EAC7CC",
   },
 
   dark: {
-    text: "#F9E8EF",
-    tint: "#FF8FAB",
+    text: "#F7F5EB",
+    tint: "#E8A2A2",
 
-    background: "#1A0A12",
-    foreground: "#F9E8EF",
+    background: "#2F3E46",
+    foreground: "#F7F5EB",
 
-    card: "#2A1020",
-    cardForeground: "#F9E8EF",
+    card: "#354F52",
+    cardForeground: "#F7F5EB",
 
-    primary: "#FF6B9D",
-    primaryForeground: "#1A0A12",
+    primary: "#A0C3D2",
+    primaryForeground: "#1F2A30",
 
-    secondary: "#3D1A2D",
-    secondaryForeground: "#F9E8EF",
+    secondary: "#52707A",
+    secondaryForeground: "#F7F5EB",
 
-    muted: "#2A1020",
-    mutedForeground: "#A07080",
+    muted: "#40565C",
+    mutedForeground: "#D5E3E8",
 
-    accent: "#FF8FAB",
-    accentForeground: "#1A0A12",
+    accent: "#E8A2A2",
+    accentForeground: "#1F1F1F",
 
-    destructive: "#EF4444",
+    destructive: "#D97A7A",
     destructiveForeground: "#FFFFFF",
 
-    border: "#4A1830",
-    input: "#3D1A2D",
+    border: "#6B7C85",
+    input: "#52707A",
 
-    bubbleMe: "#FF6B9D",
-    bubbleMeFg: "#FFFFFF",
-    bubblePartner: "#2A1020",
-    bubblePartnerFg: "#F9E8EF",
-    heartPink: "#FF8FAB",
-    roseDeep: "#FF8FAB",
-    cream: "#1A0A12",
-    softPink: "#3D1A2D",
+    bubbleMe: "#A0C3D2",
+    bubbleMeFg: "#1F2A30",
+    bubblePartner: "#354F52",
+    bubblePartnerFg: "#F7F5EB",
+    heartPink: "#E8A2A2",
+    roseDeep: "#EAC7CC",
+    cream: "#2F3E46",
+    softPink: "#52707A",
   },
 
   radius: 16,
