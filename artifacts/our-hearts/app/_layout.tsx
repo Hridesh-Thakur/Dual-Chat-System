@@ -1,4 +1,4 @@
-import {
+import { 
   Nunito_400Regular,
   Nunito_600SemiBold,
   Nunito_700Bold,
