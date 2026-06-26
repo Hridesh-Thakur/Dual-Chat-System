@@ -1,4 +1,4 @@
-import { Tabs } from "expo-router";
+import { Tabs } from "expo-router"; 
 import { BlurView } from "expo-blur";
 import { Feather } from "@expo/vector-icons";
 import React from "react";
