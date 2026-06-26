@@ -1,4 +1,4 @@
-import React, { Component, ComponentType, PropsWithChildren } from "react";
+import React, { Component, ComponentType, PropsWithChildren } from "react"; 
 
 import { ErrorFallback, ErrorFallbackProps } from "@/components/ErrorFallback";
 
