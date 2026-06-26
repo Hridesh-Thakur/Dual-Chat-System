@@ -1,4 +1,4 @@
-import {
+import { 
   KeyboardAwareScrollView,
   KeyboardAwareScrollViewProps,
 } from "react-native-keyboard-controller";
