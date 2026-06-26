@@ -1,7 +1,7 @@
 uploads = []
 outputs = []
 
-[[generated]]
+[[generated]] 
 id = "jV_kLuiHo8oJsCc6e7lBS"
 uri = "file://artifacts/our-hearts/assets/images/icon.png"
 type = "image"
