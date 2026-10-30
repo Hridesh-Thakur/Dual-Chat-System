@@ -4,7 +4,7 @@ A modern **couples chat application** built for intimate and real-time conversat
 
 ---
 
-## ✨ Features
+##  Features
 
 - **Dual Chat Interface** — Specially designed for couples
 - **Real-time Messaging** — Instant chat experience
@@ -13,7 +13,7 @@ A modern **couples chat application** built for intimate and real-time conversat
 
 ---
 
-## 🛠 Tech Stack
+##  Tech Stack
 
 - **Frontend**: TypeScript, HTML, CSS
 - **Backend**: Node.js + Express
@@ -25,7 +25,7 @@ A modern **couples chat application** built for intimate and real-time conversat
 
 ---
 
-## 🚀 Quick Start
+##  Quick Start
 
 ### Prerequisites
 - Node.js 20+
